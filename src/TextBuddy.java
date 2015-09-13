@@ -222,16 +222,22 @@ public class TextBuddy {
 			if (nextLine == null) {
 				return String.format(MESSAGE_EMPTY_FILE, fileName);
 			}
-
-			else do {
-				toDisplay += (lineNum + ". " + nextLine + "\n");
-				toWriteBack += (nextLine + "\n");
+			
+			toDisplay += (lineNum + ". " + nextLine);
+			toWriteBack += nextLine;
+			lineNum++;
+			
+			while((nextLine = reader.readLine()) != null) {
+				toDisplay += ("\n" + lineNum + ". " + nextLine);
+				toWriteBack += ("\n" + nextLine);
 				lineNum++;
-			}	while((nextLine = reader.readLine()) != null);
-						
+			}
+			
+			toWriteBack += "\n";
+			
 			writer.write(toWriteBack);
 			writer.flush();
-
+			
 		} catch (IOException ioe){
 			ioe.printStackTrace();
 		}
