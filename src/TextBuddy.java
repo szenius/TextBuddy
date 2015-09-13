@@ -227,11 +227,11 @@ public class TextBuddy {
 				toDisplay += (lineNum + ". " + nextLine + "\n");
 				toWriteBack += (nextLine + "\n");
 				lineNum++;
-			}	while((nextLine = reader.readLine()) != null)
+			}	while((nextLine = reader.readLine()) != null);
 						
 			writer.write(toWriteBack);
 			writer.flush();
-			
+
 		} catch (IOException ioe){
 			ioe.printStackTrace();
 		}
