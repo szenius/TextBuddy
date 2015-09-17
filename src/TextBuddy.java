@@ -57,6 +57,32 @@ public class TextBuddy {
 		showToUser(String.format(MESSAGE_WELCOME, fileName));
 		runTextBuddy();
 	}
+	
+	public String testExecuteCommand(String userCommand) throws IOException {
+		String commandType = getFirstWord(userCommand).toLowerCase();
+		fileName = "test.txt";
+		file = new File(fileName);
+		initialiseReader();
+		initialiseWriter();
+		
+		switch (commandType) {
+			case "add":
+				return addText(userCommand);
+			case "display":
+				return displayText(userCommand);
+			case "delete":
+				return deleteText(userCommand);
+			case "clear":
+				return clearAllText(userCommand);
+			case "exit":	
+				reader.close();
+				writer.close();
+				System.exit(0);
+			default:
+				//throw an error if the command is not recognized
+				throw new Error("unrecognized command.");
+		}
+	}
 
 	private static void initialiseFile(String[] args) throws IOException{
 		fileName = args[0];	
