@@ -61,7 +61,7 @@ public class TextBuddyTest {
 			bud.testExecuteCommand("add to be one united people");
 	
 			message = bud.testExecuteCommand("clear");
-			assertEquals(message, "all contented deleted from test.txt");	
+			assertEquals(message, "all content deleted from test.txt");	
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
