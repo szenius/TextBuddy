@@ -51,19 +51,19 @@ public class TextBuddy {
 	private static BufferedWriter writer;
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException{
-		initialiseFile(args);
-		initialiseReader();
-		initialiseWriter();
+		//initialiseFile(args);
+		//initialiseReader();
+		//initialiseWriter();
 		showToUser(String.format(MESSAGE_WELCOME, fileName));
 		runTextBuddy();
 	}
 	
 	public String testExecuteCommand(String userCommand) throws IOException {
-		String commandType = getFirstWord(userCommand).toLowerCase();
-		fileName = "test.txt";
-		file = new File(fileName);
+		String[] args = {"test.txt"};
+		initialiseFile(args);
 		initialiseReader();
 		initialiseWriter();
+		String commandType = getFirstWord(userCommand).toLowerCase();
 		
 		switch (commandType) {
 			case "add":
@@ -95,7 +95,6 @@ public class TextBuddy {
 				showToUser("error occured while creating new file.");
 			}
 		}
-
 	}
 	
 	private static void initialiseReader(){

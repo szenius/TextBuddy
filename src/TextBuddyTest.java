@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 public class TextBuddyTest {
-
+	
 	@Test
 	public void testAddText() {
 		TextBuddy bud = new TextBuddy();
@@ -20,6 +20,7 @@ public class TextBuddyTest {
 	
 			message = bud.testExecuteCommand("add merry merry ho ho ho");
 			assertEquals(message, "added to test.txt: \"merry merry ho ho ho\"");
+			
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -35,14 +36,15 @@ public class TextBuddyTest {
 			bud.testExecuteCommand("add mamaramama");
 			bud.testExecuteCommand("add just dance");
 	
-			message = bud.testExecuteCommand("delete 2");
-			assertEquals(message, "deleted from test.txt: \"mamaramama\"");
-			
 			message = bud.testExecuteCommand("delete 1");
 			assertEquals(message, "deleted from test.txt: \"pppppppapokerface\"");
-			
-			message = bud.testExecuteCommand("delete 1");
+
+			message = bud.testExecuteCommand("delete 2");
 			assertEquals(message, "deleted from test.txt: \"just dance\"");
+
+			message = bud.testExecuteCommand("delete 1");
+			assertEquals(message, "deleted from test.txt: \"mamaramama\"");
+						
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
