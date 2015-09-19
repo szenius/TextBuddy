@@ -52,5 +52,18 @@ public class TextBuddyTest {
 		
 		assertEquals(buddy.executeCommand("display"), expectedDisplayText);
 	}
+	
+	@Test
+	public void testSortFile() throws IOException{
+		testAddText();
+		
+		assertEquals(buddy.executeCommand("sort"), "testFile.txt is now sorted.");
+		
+		String expectedDisplayText = "1. one little plankton\n";
+		expectedDisplayText += "2. three little daisies";
+		expectedDisplayText += "3. two little giants\n";
+
+		assertEquals(buddy.executeCommand("display"), expectedDisplayText);
+	}
 
 }
