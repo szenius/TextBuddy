@@ -16,30 +16,30 @@ public class TextBuddyTest {
 
 	@Test
 	public void testAddText() throws IOException{
-		assertEquals(buddy.executeCommand("add one little plankton"), 
-					"added to testFile.txt: \"one little plankton\"");
-		assertEquals(buddy.executeCommand("add two little giants"), 
-				"added to testFile.txt: \"two little giants\"");
-		assertEquals(buddy.executeCommand("add three little daisies"), 
-				"added to testFile.txt: \"three little daisies\"");
+		assertEquals("added to testFile.txt: \"one little plankton\"", 
+					buddy.executeCommand("add one little plankton"));
+		assertEquals("added to testFile.txt: \"two little giants\"",
+					buddy.executeCommand("add two little giants"));
+		assertEquals("added to testFile.txt: \"three little daisies\"", 
+					buddy.executeCommand("add three little daisies"));
 	}
 	
 	@Test
 	public void testDeleteText() throws IOException{
 		testAddText();
-		assertEquals(buddy.executeCommand("delete 1"), 
-					"deleted from testFile.txt: \"one little plankton\"");
-		assertEquals(buddy.executeCommand("delete 2"), 
-				"deleted from testFile.txt: \"three little daisies\"");
-		assertEquals(buddy.executeCommand("delete 1"), 
-				"deleted from testFile.txt: \"two little giants\"");
+		assertEquals("deleted from testFile.txt: \"one little plankton\"", 
+					buddy.executeCommand("delete 1"));
+		assertEquals("deleted from testFile.txt: \"three little daisies\"", 
+					buddy.executeCommand("delete 2"));
+		assertEquals("deleted from testFile.txt: \"two little giants\"", 
+					buddy.executeCommand("delete 1"));
 	}
 	
 	@Test
 	public void testClearAllText() throws IOException{
 		testAddText();
-		assertEquals(buddy.executeCommand("clear"), 
-					"all content deleted from testFile.txt");
+		assertEquals("all content deleted from testFile.txt", 
+					buddy.executeCommand("clear"));
 	}
 	
 	@Test
@@ -50,14 +50,14 @@ public class TextBuddyTest {
 		expectedDisplayText += "2. two little giants\n";
 		expectedDisplayText += "3. three little daisies";
 		
-		assertEquals(buddy.executeCommand("display"), expectedDisplayText);
+		assertEquals(expectedDisplayText, buddy.executeCommand("display"));
 	}
 	
 	@Test
 	public void testSortFile() throws IOException{
 		testAddText();
 		
-		assertEquals(buddy.executeCommand("sort"), "all content sorted in testFile.txt");
+		assertEquals("all content sorted in testFile.txt", buddy.executeCommand("sort"));
 		
 		String expectedDisplayText = "1. one little plankton\n";
 		expectedDisplayText += "2. three little daisies\n";
