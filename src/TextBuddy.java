@@ -102,7 +102,7 @@ public class TextBuddy {
 	}
 	
 	private void initialiseWriter() throws FileNotFoundException {
-			writer = new PrintWriter(file);
+		writer = new PrintWriter(file);
 	}
 	
 	public String executeCommand(String userCommand) throws IOException {
@@ -160,26 +160,36 @@ public class TextBuddy {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
-		
+				
+		return getDisplayContent();
+	}
+	
+	private String getDisplayContent() throws IOException {
 		int lineNum = 1;
-		String fileContent = new String();
-		String nextLine = reader.readLine();
+		String displayContent = new String();
+		String nextLine = new String();
+	
+		nextLine = reader.readLine();
 		
 		if (nextLine == null) {
 			return String.format(MESSAGE_EMPTY_FILE, fileName);
 		}
 		
-		while (nextLine != null) {
-			fileContent += lineNum + ". " + nextLine + "\n";
+		displayContent += (lineNum + ". " + nextLine);
+		writer.println(nextLine);
+		lineNum++;
+		
+		while((nextLine = reader.readLine()) != null) {
+			displayContent += ("\n" + lineNum + ". " + nextLine);
 			writer.println(nextLine);
 			lineNum++;
-			nextLine = reader.readLine();
 		}
 		
 		writer.flush();
 		
-		return removeLastChar(fileContent);
+		return displayContent;
 	}
+	
 	
 	/**
 	 * This operation is used to delete a line of text in the textfile
@@ -195,10 +205,10 @@ public class TextBuddy {
 		if (parameters.length != PARAM_SIZE_FOR_DELETE) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
-
+		
 		int toDeleteLineNum = Integer.valueOf(parameters[0]);
 		int lineNum = 1;
-		String lineToDelete = new String();
+		String lineToDelete = new String();		
 		String nextLine;
 		
 		while((nextLine = reader.readLine()) != null) {
@@ -208,12 +218,12 @@ public class TextBuddy {
 				continue;
 			}
 			
-			writer.println(nextLine);
-			lineNum++;			
+			writer.println(nextLine);		
+			lineNum++;
 		}
 		
 		writer.flush();
-				
+						
 		return String.format(MESSAGE_DELETED, fileName, lineToDelete);
 	}
 	
@@ -248,7 +258,14 @@ public class TextBuddy {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 		
-		ArrayList<String> fileContent = getFileContent();
+		ArrayList<String> fileContent = new ArrayList<String>();
+		
+		String nextLine = new String();
+		
+		while ((nextLine = reader.readLine()) != null) {
+			fileContent.add(nextLine);
+		}
+		
 		Collections.sort(fileContent);
 		
 		for (int i = 0; i < fileContent.size(); i++) {
@@ -277,32 +294,30 @@ public class TextBuddy {
 		
 		String searchWord = parameters[0];
 		String searchResults = new String();
-	
+		String nextLine = new String();
+		
 		int lineNum = 1;
 		
-		String nextLine = reader.readLine();	
-		if (nextLine == null) {
-			return String.format(MESSAGE_EMPTY_FILE, fileName);
-		}
-		
-		while (nextLine != null) {
+		while ((nextLine = reader.readLine()) != null) {
 			if (nextLine.contains(searchWord)) {
-				searchResults += lineNum + ". " + nextLine + "\n";
+				if (lineNum != 1) {
+					searchResults += "\n";
+				}
+				
+				searchResults += (lineNum + ". " + nextLine);
 				lineNum++;
-				nextLine = reader.readLine();
 			}
 			
 			writer.println(nextLine);
 		}	
-	
-		writer.flush();
 		
-		
+		writer.flush();	
+				
 		if (searchResults.isEmpty()) {
 			return MESSAGE_NO_SEARCH_RESULTS;
 		}
 		
-		return removeLastChar(searchResults);
+		return searchResults;
 	}
 	
 	private void showToUser(String text) {
@@ -318,30 +333,9 @@ public class TextBuddy {
 		return commandTypeString;
 	}
 	
-	private String removeLastChar(String text) {
-		return text.substring(0, text.length()-1);
-	}
-	
 	private String[] splitParameters(String commandParametersString) {
 		String[] parameters = commandParametersString.trim().split("\\s+");
 		return parameters;
 	}	
-	
-	private ArrayList<String> getFileContent() throws IOException {
-		String nextLine = new String();
-		nextLine = reader.readLine();
-		
-		if (nextLine == null) {
-			showToUser(String.format(MESSAGE_EMPTY_FILE, fileName));
-		}
-		
-		ArrayList<String> fileContent = new ArrayList<String>();
-		fileContent.add(nextLine);
-		
-		while ((nextLine = reader.readLine()) != null) {
-			fileContent.add(nextLine);
-		}
-		
-		return fileContent;
-	}
+
 }
