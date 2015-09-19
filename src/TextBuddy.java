@@ -173,11 +173,11 @@ public class TextBuddy {
 		int toDeleteLineNum = Integer.valueOf(parameters[0]);
 		int lineNum = 1;
 		String lineToDelete = new String();
-		ArrayList<String> toWriteBack = new ArrayList<String>();
+		ArrayList<String> updatedFileContent = new ArrayList<String>();
 		
 		String nextLine;
 		
-		// Read all lines in text file except the line to be deleted to a temp file
+		// Add all lines in text file except the line to be deleted to updatedFileContent
 		try {
 			while((nextLine = reader.readLine()) != null) {
 				if (lineNum == toDeleteLineNum) {
@@ -186,14 +186,15 @@ public class TextBuddy {
 					continue;
 				}
 				
-				toWriteBack.add(nextLine);				
+				updatedFileContent.add(nextLine);				
 				lineNum++;			
 			}
 			
-			for (int i = 0; i < toWriteBack.size(); i++) {
-				writer.write(toWriteBack.get(i) + System.getProperty("line.separator"));
-				writer.flush();
+			for (int i = 0; i < updatedFileContent.size(); i++) {
+				writer.println(updatedFileContent.get(i));
 			}
+			
+			writer.flush();
 			
 		} catch(IOException ioe) {
 			ioe.printStackTrace();

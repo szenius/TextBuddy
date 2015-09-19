@@ -22,7 +22,6 @@ public class TextBuddyTest {
 				"added to testFile.txt: \"two little giants\"");
 		assertEquals(buddy.executeCommand("add three little daisies"), 
 				"added to testFile.txt: \"three little daisies\"");
-
 	}
 	
 	@Test
