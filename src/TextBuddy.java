@@ -185,6 +185,8 @@ public class TextBuddy {
 		}
 		
 		writer.flush();
+		
+		return fileContent;
 	}
 	
 	/**
