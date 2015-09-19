@@ -39,6 +39,7 @@ public class TextBuddy {
 	private static final String MESSAGE_ADDED = "added to %1$s: \"%2$s\"";
 	private static final String MESSAGE_DELETED = "deleted from %1$s: \"%2$s\"";
 	private static final String MESSAGE_CLEARED_ALL = "all content deleted from %1$s";
+	private static final String MESSAGE_SORTED = "all content sorted in %1$s";
 	private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
 	private static final String MESSAGE_INVALID_FORMAT = "invalid command format!";
 
@@ -125,6 +126,8 @@ public class TextBuddy {
 				return deleteText(userCommand);
 			case "clear":
 				return clearAllText(userCommand);
+			case "sort":
+				return sortFile(userCommand);
 			case "exit":	
 				reader.close();
 				writer.close();
@@ -133,6 +136,40 @@ public class TextBuddy {
 				//show error message if the command is not recognized
 				return MESSAGE_INVALID_FORMAT;
 		}
+	}
+	
+	/**
+	 * This operation is used to sort text alphabetically in the textfile
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return status of the operation
+	 */
+	public String sortFile(String userCommand) throws IOException {
+		if (!removeFirstWord(userCommand).equals("")) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+		
+		String nextLine = reader.readLine();
+		
+		if (nextLine == null) {
+			return String.format(MESSAGE_EMPTY_FILE, fileName);
+		}
+		
+		ArrayList<String> sortedFileContent = new ArrayList<String>();
+		sortedFileContent.add(nextLine);
+		
+		while ((nextLine = reader.readLine()) != null) {
+			sortedFileContent.add(nextLine);
+		}
+		
+		Collections.sort(sortedFileContent);
+		
+		for (int i = 0; i < sortedFileContent.size(); i++) {
+			writer.println(sortedFileContent.get(i));
+		}
+		
+		writer.flush();
 	}
 	
 	/**
@@ -260,4 +297,12 @@ public class TextBuddy {
 		String[] parameters = commandParametersString.trim().split("\\s+");
 		return parameters;
 	}	
+	
+	private boolean isEmptyFile(String nextLine) {
+		if (nextLine == null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
