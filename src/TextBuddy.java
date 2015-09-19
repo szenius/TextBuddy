@@ -55,53 +55,14 @@ public class TextBuddy {
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		String fileName = args[0];
 		TextBuddy buddy = new TextBuddy(fileName);
-		
 		buddy.showToUser(String.format(MESSAGE_WELCOME, fileName));
-		
-		try {
-			buddy.runTextBuddy();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+		buddy.runTextBuddy();
 	}
 	
 	public TextBuddy(String fileName) throws IOException {
 		initialiseFile(fileName);
 		initialiseReader();
 		initialiseWriter();
-	}
-
-	private void initialiseFile(String fileName) throws IOException{
-		this.fileName = fileName;	
-		file = new File(fileName);
-
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch(IOException ioe) {
-				showToUser("error occured while creating new file.");
-			}
-		}
-	}
-	
-	private void initialiseReader(){
-		try {
-			reader = new BufferedReader(new FileReader(file));
-		} catch (FileNotFoundException fnfe) {
-			showToUser("file not found.");
-		}
-	}
-	
-	private void initialiseWriter() {
-		try {
-			writer = new PrintWriter(file);
-		} catch (FileNotFoundException fnfe) {
-			showToUser("file not found.");
-		} 
-	}
-	
-	public void showToUser(String text) {
-		System.out.println(text);
 	}
 	
 	public void runTextBuddy() throws IOException {
@@ -113,6 +74,30 @@ public class TextBuddy {
 				showToUser(feedback);
 			}
 		}	
+	}
+	
+	public void shutDownTextBuddy() throws IOException {
+		reader.close();
+		writer.close();
+		System.exit(0);
+	}
+
+
+	private void initialiseFile(String fileName) throws IOException{
+		this.fileName = fileName;	
+		file = new File(fileName);
+
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+	}
+	
+	private void initialiseReader() throws FileNotFoundException {
+		reader = new BufferedReader(new FileReader(file));
+	}
+	
+	private void initialiseWriter() throws FileNotFoundException {
+			writer = new PrintWriter(file);
 	}
 	
 	public String executeCommand(String userCommand) throws IOException {
@@ -132,13 +117,159 @@ public class TextBuddy {
 			case "search":
 				return searchFile(userCommand);
 			case "exit":	
-				reader.close();
-				writer.close();
-				System.exit(0);
+				shutDownTextBuddy();
 			default:
 				//show error message if the command is not recognized
 				return MESSAGE_INVALID_FORMAT;
 		}
+	}
+	
+	/**
+	 * This operation is used to add a line of text to the end of the textfile
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return status of the operation
+	 */
+	public String addText(String userCommand) {
+		if (removeFirstWord(userCommand).isEmpty()) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+		
+		String lineToAdd = removeFirstWord(userCommand);
+		
+		writer.println(lineToAdd);
+		writer.flush();
+	
+		return String.format(MESSAGE_ADDED, fileName, lineToAdd);
+	}
+	
+	/**
+	 * This operation is used to display all text in the textfile
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return content to be displayed
+	 */
+	public String displayText(String userCommand) throws IOException {
+		if (!removeFirstWord(userCommand).equals("")) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+		
+		int lineNum = 1;
+		String fileContent = new String();
+		String nextLine = new String();
+		
+		nextLine = reader.readLine();
+		
+		if (nextLine == null) {
+			return String.format(MESSAGE_EMPTY_FILE, fileName);
+		}
+		
+		fileContent += lineNum + ". " + nextLine;
+		lineNum++;
+		writer.println(nextLine);
+		
+		while ((nextLine = reader.readLine()) != null) {
+			fileContent += "\n" + lineNum + ". " + nextLine;
+			writer.println(nextLine);
+			lineNum++;
+		}
+		
+		writer.flush();
+			
+		return fileContent;
+	}
+	
+	/**
+	 * This operation is used to delete a line of text in the textfile
+	 * based on the input line number
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return status of the operation
+	 */
+	public String deleteText(String userCommand) throws IOException {
+		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
+
+		if (parameters.length != PARAM_SIZE_FOR_DELETE) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+
+		int toDeleteLineNum = Integer.valueOf(parameters[0]);
+		int lineNum = 1;
+		String lineToDelete = new String();
+		String nextLine;
+		
+		while((nextLine = reader.readLine()) != null) {
+			if (lineNum == toDeleteLineNum) {
+				lineToDelete = nextLine;
+				lineNum++;
+				continue;
+			}
+			
+			writer.println(nextLine);
+			lineNum++;			
+		}
+		
+		writer.flush();
+				
+		return String.format(MESSAGE_DELETED, fileName, lineToDelete);
+	}
+	
+	/**
+	 * This operation is used to clear all text in the textfile
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return status of the operation
+	 */
+	public String clearAllText(String userCommand) throws IOException {
+		if (!removeFirstWord(userCommand).equals("")) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+		
+		while(reader.readLine() != null) {
+			continue;
+		}
+
+		return String.format(MESSAGE_CLEARED_ALL, fileName);
+	}
+
+	/**
+	 * This operation is used to sort text alphabetically in the textfile
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return status of the operation
+	 */
+	public String sortFile(String userCommand) throws IOException {
+		if (!removeFirstWord(userCommand).equals("")) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+		
+		String nextLine = reader.readLine();
+		
+		if (nextLine == null) {
+			return String.format(MESSAGE_EMPTY_FILE, fileName);
+		}
+		
+		ArrayList<String> sortedFileContent = new ArrayList<String>();
+		sortedFileContent.add(nextLine);
+		
+		while ((nextLine = reader.readLine()) != null) {
+			sortedFileContent.add(nextLine);
+		}
+		
+		Collections.sort(sortedFileContent);
+		
+		for (int i = 0; i < sortedFileContent.size(); i++) {
+			writer.println(sortedFileContent.get(i));
+		}
+		
+		writer.flush();
+		
+		return String.format(MESSAGE_SORTED, fileName);
 	}
 	
 	/**
@@ -185,152 +316,9 @@ public class TextBuddy {
 		return searchResults;
 	}
 	
-	/**
-	 * This operation is used to sort text alphabetically in the textfile
-	 * 
-	 * @param userCommand
-	 *            is the full string user has entered as the command
-	 * @return status of the operation
-	 */
-	public String sortFile(String userCommand) throws IOException {
-		if (!removeFirstWord(userCommand).equals("")) {
-			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
-		}
-		
-		String nextLine = reader.readLine();
-		
-		if (nextLine == null) {
-			return String.format(MESSAGE_EMPTY_FILE, fileName);
-		}
-		
-		ArrayList<String> sortedFileContent = new ArrayList<String>();
-		sortedFileContent.add(nextLine);
-		
-		while ((nextLine = reader.readLine()) != null) {
-			sortedFileContent.add(nextLine);
-		}
-		
-		Collections.sort(sortedFileContent);
-		
-		for (int i = 0; i < sortedFileContent.size(); i++) {
-			writer.println(sortedFileContent.get(i));
-		}
-		
-		writer.flush();
-		
-		return String.format(MESSAGE_SORTED, fileName);
-	}
 	
-	/**
-	 * This operation is used to clear all text in the textfile
-	 * 
-	 * @param userCommand
-	 *            is the full string user has entered as the command
-	 * @return status of the operation
-	 */
-	public String clearAllText(String userCommand) throws IOException {
-		if (!removeFirstWord(userCommand).equals("")) {
-			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
-		}
-		
-		while(reader.readLine() != null) {
-			continue;
-		}
-
-		return String.format(MESSAGE_CLEARED_ALL, fileName);
-	}
-	
-	/**
-	 * This operation is used to delete a line of text in the textfile
-	 * based on the input line number
-	 * 
-	 * @param userCommand
-	 *            is the full string user has entered as the command
-	 * @return status of the operation
-	 */
-	public String deleteText(String userCommand) throws IOException {
-		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
-
-		if (parameters.length != PARAM_SIZE_FOR_DELETE) {
-			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
-		}
-
-		int toDeleteLineNum = Integer.valueOf(parameters[0]);
-		int lineNum = 1;
-		String lineToDelete = new String();
-		String nextLine;
-		
-		while((nextLine = reader.readLine()) != null) {
-			if (lineNum == toDeleteLineNum) {
-				lineToDelete = nextLine;
-				lineNum++;
-				continue;
-			}
-			
-			writer.println(nextLine);
-			lineNum++;			
-		}
-		
-		writer.flush();
-				
-		return String.format(MESSAGE_DELETED, fileName, lineToDelete);
-	}
-
-	/**
-	 * This operation is used to display all text in the textfile
-	 * 
-	 * @param userCommand
-	 *            is the full string user has entered as the command
-	 * @return content to be displayed
-	 */
-	public String displayText(String userCommand) throws IOException {
-		if (!removeFirstWord(userCommand).equals("")) {
-			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
-		}
-		
-		int lineNum = 1;
-		String fileContent = new String();
-		String nextLine = new String();
-		
-		nextLine = reader.readLine();
-		
-		if (nextLine == null) {
-			return String.format(MESSAGE_EMPTY_FILE, fileName);
-		}
-		
-		fileContent += lineNum + ". " + nextLine;
-		lineNum++;
-		writer.println(nextLine);
-		
-		while ((nextLine = reader.readLine()) != null) {
-			fileContent += "\n" + lineNum + ". " + nextLine;
-			writer.println(nextLine);
-			lineNum++;
-		}
-		
-		writer.flush();
-			
-		return fileContent;
-	}
-	
-	/**
-	 * This operation is used to add a line of text to the end of the textfile
-	 * 
-	 * @param userCommand
-	 *            is the full string user has entered as the command
-	 * @return status of the operation
-	 */
-	public String addText(String userCommand) {
-		if (removeFirstWord(userCommand).isEmpty()) {
-			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
-		}
-		
-		String lineToAdd = removeFirstWord(userCommand);
-		
-		writer.println(lineToAdd);
-		writer.flush();
-	
-		return String.format(MESSAGE_ADDED, fileName, lineToAdd);
+	public void showToUser(String text) {
+		System.out.println(text);
 	}
 	
 	private static String removeFirstWord(String userCommand) {
@@ -346,12 +334,4 @@ public class TextBuddy {
 		String[] parameters = commandParametersString.trim().split("\\s+");
 		return parameters;
 	}	
-	
-	/*private boolean isEmptyFile(String nextLine) {
-		if (nextLine == null) {
-			return true;
-		} else {
-			return false;
-		}
-	}*/
 }
