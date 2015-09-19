@@ -42,6 +42,7 @@ public class TextBuddy {
 	private static final String MESSAGE_SORTED = "all content sorted in %1$s";
 	private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
 	private static final String MESSAGE_INVALID_FORMAT = "invalid command format!";
+	private static final String MESSAGE_NO_SEARCH_RESULTS = "no results found.";
 
 	
 	// These are the correct number of parameters for each command
@@ -284,7 +285,15 @@ public class TextBuddy {
 		}
 		
 		String searchWord = parameters[0];
-		return getSearchResults(searchWord);
+		String searchResults = new String();
+		
+		searchResults = getSearchResults(searchWord);
+		
+		if (searchResults.isEmpty()) {
+			return MESSAGE_NO_SEARCH_RESULTS;
+		}
+		
+		return searchResults;
 	}
 	
 	private String getSearchResults(String searchWord) throws IOException {
