@@ -65,5 +65,20 @@ public class TextBuddyTest {
 
 		assertEquals(buddy.executeCommand("display"), expectedDisplayText);
 	}
+	
+	@Test
+	public void testSearch() throws IOException{
+		testAddText();
+		
+		String expectedSearchResults = "1. one little plankton\n";
+		expectedSearchResults += "2. two little giants\n";
+		expectedSearchResults += "3. three little daisies";
+		
+		assertEquals(expectedSearchResults, buddy.executeCommand("search little"));
+		
+		expectedSearchResults = "1. one little plankton";
+		
+		assertEquals(expectedSearchResults, buddy.executeCommand("search plankton"));
+	}
 
 }
