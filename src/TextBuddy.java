@@ -164,6 +164,7 @@ public class TextBuddy {
 		return getDisplayContent();
 	}
 	
+	// @return all content from file in String format
 	private String getDisplayContent() throws IOException {
 		int lineNum = 1;
 		String displayContent = new String();
@@ -302,6 +303,11 @@ public class TextBuddy {
 		return searchResults;
 	}
 	
+	/**
+	 * @param searchWord
+	 *            is the keyword user wants to search for in textfile
+	 * @return lines which contain the search word in one String
+	 */
 	private String getSearchResults(String searchWord) throws IOException {
 		String searchResults = new String();
 		String nextLine = new String();
