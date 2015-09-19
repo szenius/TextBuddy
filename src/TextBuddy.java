@@ -168,11 +168,13 @@ public class TextBuddy {
 		if (nextLine.contains(searchWord)) {
 			searchResults += lineNum + ". " + nextLine;
 			writer.println(nextLine);
+			lineNum++;
 		}
 		
 		while ((nextLine = reader.readLine()) != null) {
 			if (nextLine.contains(searchWord)) {
 				searchResults += "\n" + lineNum + ". " + nextLine;
+				lineNum++;
 			}
 			
 			writer.println(nextLine);
