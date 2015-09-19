@@ -7,18 +7,23 @@ import java.io.*;
  
  Welcome to TextBuddy. mytextfile.txt is ready for use
  command: add little brown fox
- added to mytextfile.txt: “little brown fox”
+ added to mytextfile.txt: “zebra crossings”
  command: display
- 1. little brown fox
+ 1. zebra crossings
  command: add jumped over the moon
  added to mytextfile.txt: “jumped over the moon”
  command: display
- 1. little brown fox
+ 1. zebra crossings
  2. jumped over the moon
- command: delete 2
- deleted from mytextfile.txt: “jumped over the moon”
+ command: sort
+ all content sorted in mytextfile.txt
  command: display
- 1. little brown fox
+ 1. jumped over the moon
+ 2. zebra crossings
+ command: delete 2
+ deleted from mytextfile.txt: “zebra crossings”
+ command: display
+ 1. jumped over the moon
  command: clear
  all content deleted from mytextfile.txt
  command: display
@@ -349,5 +354,4 @@ public class TextBuddy {
 		String[] parameters = commandParametersString.trim().split("\\s+");
 		return parameters;
 	}	
-
 }
