@@ -160,34 +160,25 @@ public class TextBuddy {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
-				
-		return getDisplayContent();
-	}
-	
-	private String getDisplayContent() throws IOException {
+		
 		int lineNum = 1;
 		String fileContent = new String();
-		String nextLine = new String();
-		
-		nextLine = reader.readLine();
+		String nextLine = reader.readLine();
 		
 		if (nextLine == null) {
 			return String.format(MESSAGE_EMPTY_FILE, fileName);
 		}
 		
-		fileContent += lineNum + ". " + nextLine;
-		lineNum++;
-		writer.println(nextLine);
-		
-		while ((nextLine = reader.readLine()) != null) {
-			fileContent += "\n" + lineNum + ". " + nextLine;
+		while (nextLine != null) {
+			fileContent += lineNum + ". " + nextLine + "\n";
 			writer.println(nextLine);
 			lineNum++;
+			nextLine = reader.readLine();
 		}
 		
 		writer.flush();
 		
-		return fileContent;
+		return removeLastChar(fileContent);
 	}
 	
 	/**
@@ -286,49 +277,33 @@ public class TextBuddy {
 		
 		String searchWord = parameters[0];
 		String searchResults = new String();
+	
+		int lineNum = 1;
 		
-		searchResults = getSearchResults(searchWord);
+		String nextLine = reader.readLine();	
+		if (nextLine == null) {
+			return String.format(MESSAGE_EMPTY_FILE, fileName);
+		}
+		
+		while (nextLine != null) {
+			if (nextLine.contains(searchWord)) {
+				searchResults += lineNum + ". " + nextLine + "\n";
+				lineNum++;
+				nextLine = reader.readLine();
+			}
+			
+			writer.println(nextLine);
+		}	
+	
+		writer.flush();
+		
 		
 		if (searchResults.isEmpty()) {
 			return MESSAGE_NO_SEARCH_RESULTS;
 		}
 		
-		return searchResults;
+		return removeLastChar(searchResults);
 	}
-	
-	private String getSearchResults(String searchWord) throws IOException {
-		String searchResults = new String();
-		int lineNum = 1;
-		String nextLine = new String();
-		nextLine = reader.readLine();
-		
-		if (nextLine == null) {
-			return String.format(MESSAGE_EMPTY_FILE, fileName);
-		}
-		
-		if (nextLine.contains(searchWord)) {
-			searchResults += lineNum + ". " + nextLine;
-			lineNum++;
-		}
-		
-		writer.println(nextLine);
-
-		while ((nextLine = reader.readLine()) != null) {
-			if (nextLine.contains(searchWord)) {
-				if (lineNum != 1) {
-					searchResults += "\n";
-				}
-				searchResults += lineNum + ". " + nextLine;
-				lineNum++;
-			}
-			
-			writer.println(nextLine);
-		}	
-		
-		writer.flush();
-		
-		return searchResults;
-	}	
 	
 	private void showToUser(String text) {
 		System.out.println(text);
@@ -341,6 +316,10 @@ public class TextBuddy {
 	private String getFirstWord(String userCommand) {
 		String commandTypeString = userCommand.trim().split("\\s+")[0];
 		return commandTypeString;
+	}
+	
+	private String removeLastChar(String text) {
+		return text.substring(0, text.length()-1);
 	}
 	
 	private String[] splitParameters(String commandParametersString) {

@@ -79,6 +79,7 @@ public class TextBuddyTest {
 		expectedSearchResults = "1. three little daisies";
 		
 		assertEquals(expectedSearchResults, buddy.executeCommand("search daisies"));
+		assertEquals("no results found.", buddy.executeCommand("search teehee"));
 	}
 
 }
