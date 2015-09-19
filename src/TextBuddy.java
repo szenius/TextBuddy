@@ -248,7 +248,8 @@ public class TextBuddy {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 		
-		String nextLine = reader.readLine();
+		String nextLine = new String();
+		nextLine = reader.readLine();
 		
 		if (nextLine == null) {
 			return String.format(MESSAGE_EMPTY_FILE, fileName);
@@ -290,7 +291,8 @@ public class TextBuddy {
 		String searchWord = parameters[0];
 		String searchResults = new String();
 		int lineNum = 1;
-		String nextLine = reader.readLine();
+		String nextLine = new String();
+		nextLine = reader.readLine();
 		
 		if (nextLine == null) {
 			return String.format(MESSAGE_EMPTY_FILE, fileName);
@@ -298,13 +300,17 @@ public class TextBuddy {
 		
 		if (nextLine.contains(searchWord)) {
 			searchResults += lineNum + ". " + nextLine;
-			writer.println(nextLine);
 			lineNum++;
 		}
 		
+		writer.println(nextLine);
+
 		while ((nextLine = reader.readLine()) != null) {
 			if (nextLine.contains(searchWord)) {
-				searchResults += "\n" + lineNum + ". " + nextLine;
+				if (lineNum != 1) {
+					searchResults += "\n";
+				}
+				searchResults += lineNum + ". " + nextLine;
 				lineNum++;
 			}
 			

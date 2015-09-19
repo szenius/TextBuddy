@@ -76,9 +76,9 @@ public class TextBuddyTest {
 		
 		assertEquals(expectedSearchResults, buddy.executeCommand("search little"));
 		
-		expectedSearchResults = "1. one little plankton";
+		expectedSearchResults = "1. three little daisies";
 		
-		assertEquals(expectedSearchResults, buddy.executeCommand("search plankton"));
+		assertEquals(expectedSearchResults, buddy.executeCommand("search daisies"));
 	}
 
 }
