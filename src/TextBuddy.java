@@ -46,6 +46,7 @@ public class TextBuddy {
 	
 	// These are the correct number of parameters for each command
 	private static final int PARAM_SIZE_FOR_DELETE = 1;
+	private static final int PARAM_SIZE_FOR_SEARCH = 1;
 		
 	private static Scanner scanner = new Scanner(System.in);
 	private static BufferedReader reader;
@@ -128,6 +129,8 @@ public class TextBuddy {
 				return clearAllText(userCommand);
 			case "sort":
 				return sortFile(userCommand);
+			case "search":
+				return searchFile(userCommand);
 			case "exit":	
 				reader.close();
 				writer.close();
@@ -136,6 +139,48 @@ public class TextBuddy {
 				//show error message if the command is not recognized
 				return MESSAGE_INVALID_FORMAT;
 		}
+	}
+	
+	/**
+	 * This operation is used to search for lines in the textfile
+	 * 	that contains the input search word
+	 * 
+	 * @param userCommand
+	 *            is the full string user has entered as the command
+	 * @return lines which contain the search word
+	 */
+	public String searchFile(String userCommand) throws IOException {
+		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
+
+		if (parameters.length != PARAM_SIZE_FOR_SEARCH) {
+			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
+		}
+		
+		String searchWord = parameters[0];
+		String searchResults = new String();
+		int lineNum = 1;
+		String nextLine = reader.readLine();
+		
+		if (nextLine == null) {
+			return String.format(MESSAGE_EMPTY_FILE, fileName);
+		}
+		
+		if (nextLine.contains(searchWord)) {
+			searchResults += lineNum + ". " + nextLine;
+			writer.println(nextLine);
+		}
+		
+		while ((nextLine = reader.readLine()) != null) {
+			if (nextLine.contains(searchWord)) {
+				searchResults += "\n" + lineNum + ". " + nextLine;
+			}
+			
+			writer.println(nextLine);
+		}	
+		
+		writer.flush();
+		
+		return searchResults;
 	}
 	
 	/**
@@ -234,7 +279,7 @@ public class TextBuddy {
 	 * 
 	 * @param userCommand
 	 *            is the full string user has entered as the command
-	 * @return MESSAGE_DISPLAY_SUCCESS if operation succeeds
+	 * @return content to be displayed
 	 */
 	public String displayText(String userCommand) throws IOException {
 		if (!removeFirstWord(userCommand).equals("")) {
@@ -280,7 +325,7 @@ public class TextBuddy {
 		
 		String lineToAdd = removeFirstWord(userCommand);
 		
-		writer.write(lineToAdd + System.getProperty("line.separator"));
+		writer.println(lineToAdd);
 		writer.flush();
 	
 		return String.format(MESSAGE_ADDED, fileName, lineToAdd);

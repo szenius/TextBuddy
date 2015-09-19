@@ -67,7 +67,7 @@ public class TextBuddyTest {
 	}
 	
 	@Test
-	public void testSearch() throws IOException{
+	public void testSearchFile() throws IOException{
 		testAddText();
 		
 		String expectedSearchResults = "1. one little plankton\n";
