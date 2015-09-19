@@ -37,7 +37,6 @@ public class TextBuddy {
 	
 	private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. %1$s is ready for use";
 	private static final String MESSAGE_ADDED = "added to %1$s: \"%2$s\"";
-	private static final String MESSAGE_DISPLAY = "%1$d. %2$s";
 	private static final String MESSAGE_DELETED = "deleted from %1$s: \"%2$s\"";
 	private static final String MESSAGE_CLEARED_ALL = "all content deleted from %1$s";
 	private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
@@ -48,19 +47,28 @@ public class TextBuddy {
 		
 	private static Scanner scanner = new Scanner(System.in);
 	private static BufferedReader reader;
-	private static BufferedWriter writer;
+	private static PrintWriter writer;
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException{
-		//initialiseFile(args);
-		//initialiseReader();
-		//initialiseWriter();
+		initialiseFile(args);
+		initialiseReader();
+		initialiseWriter();
 		showToUser(String.format(MESSAGE_WELCOME, fileName));
 		runTextBuddy();
 	}
 	
 	public String testExecuteCommand(String userCommand) throws IOException {
-		String[] args = {"test.txt"};
-		initialiseFile(args);
+		fileName = "test.txt";
+		file = new File(fileName);
+		
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch(IOException ioe) {
+				showToUser("error occured while creating new file.");
+			}
+		}
+		
 		initialiseReader();
 		initialiseWriter();
 		String commandType = getFirstWord(userCommand).toLowerCase();
@@ -107,12 +115,10 @@ public class TextBuddy {
 	
 	private static void initialiseWriter() {
 		try {
-			writer = new BufferedWriter(new FileWriter(file));
+			writer = new PrintWriter(file);
 		} catch (FileNotFoundException fnfe) {
 			showToUser("file not found.");
-		} catch (IOException ioe) {
-			showToUser("error occured while initialising writer.");
-		}
+		} 
 	}
 	
 	private static void showToUser(String text) {
@@ -124,7 +130,9 @@ public class TextBuddy {
 			System.out.print("command:");
 			String command = scanner.nextLine();
 			String feedback = executeCommand(command);
-			showToUser(feedback);
+			if (feedback != null) {
+				showToUser(feedback);
+			}
 		}	
 	}
 	
@@ -145,8 +153,8 @@ public class TextBuddy {
 				writer.close();
 				System.exit(0);
 			default:
-				//throw an error if the command is not recognized
-				throw new Error("unrecognized command.");
+				//show error message if the command is not recognized
+				return MESSAGE_INVALID_FORMAT;
 		}
 	}
 	
@@ -229,7 +237,7 @@ public class TextBuddy {
 	 * 
 	 * @param userCommand
 	 *            is the full string user has entered as the command
-	 * @return status of the operation
+	 * @return MESSAGE_DISPLAY_SUCCESS if operation succeeds
 	 */
 	private static String displayText(String userCommand) {
 		if (!removeFirstWord(userCommand).equals("")) {
@@ -237,8 +245,7 @@ public class TextBuddy {
 		}
 		
 		int lineNum = 1;
-		String toDisplay = new String();
-		String toWriteBack = new String();
+		String fileContent = new String();
 		String nextLine = new String();
 		
 		try {
@@ -248,26 +255,23 @@ public class TextBuddy {
 				return String.format(MESSAGE_EMPTY_FILE, fileName);
 			}
 			
-			toDisplay += (lineNum + ". " + nextLine);
-			toWriteBack += nextLine;
+			fileContent += lineNum + ". " + nextLine;
 			lineNum++;
+			writer.println(nextLine);
 			
-			while((nextLine = reader.readLine()) != null) {
-				toDisplay += ("\n" + lineNum + ". " + nextLine);
-				toWriteBack += ("\n" + nextLine);
+			while ((nextLine = reader.readLine()) != null) {
+				fileContent += "\n" + lineNum + ". " + nextLine;
+				writer.println(nextLine);
 				lineNum++;
 			}
 			
-			toWriteBack += "\n";
-			
-			writer.write(toWriteBack);
 			writer.flush();
 			
 		} catch (IOException ioe){
 			ioe.printStackTrace();
 		}
 		
-		return toDisplay;
+		return fileContent;
 	}
 
 	/**
@@ -278,16 +282,12 @@ public class TextBuddy {
 	 * @return status of the operation
 	 */
 	private static String addText(String userCommand) {
-		String textToAdd = removeFirstWord(userCommand);
+		String lineToAdd = removeFirstWord(userCommand);
 		
-		try {
-			writer.write(textToAdd + System.getProperty("line.separator"));
-			writer.flush();
-		} catch(IOException ioe) {
-			ioe.printStackTrace();
-		}
+		writer.write(lineToAdd + System.getProperty("line.separator"));
+		writer.flush();
 	
-		return String.format(MESSAGE_ADDED, fileName, textToAdd);
+		return String.format(MESSAGE_ADDED, fileName, lineToAdd);
 	}
 	
 	private static String removeFirstWord(String userCommand) {
