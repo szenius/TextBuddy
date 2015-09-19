@@ -293,6 +293,16 @@ public class TextBuddy {
 		}
 		
 		String searchWord = parameters[0];
+		String searchResults = getSearchResults(searchWord);
+				
+		if (searchResults.isEmpty()) {
+			return MESSAGE_NO_SEARCH_RESULTS;
+		}
+		
+		return searchResults;
+	}
+	
+	private String getSearchResults(String searchWord) throws IOException {
 		String searchResults = new String();
 		String nextLine = new String();
 		
@@ -312,10 +322,6 @@ public class TextBuddy {
 		}	
 		
 		writer.flush();	
-				
-		if (searchResults.isEmpty()) {
-			return MESSAGE_NO_SEARCH_RESULTS;
-		}
 		
 		return searchResults;
 	}
