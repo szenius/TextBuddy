@@ -48,7 +48,7 @@ public class TextBuddy {
 	private static BufferedReader reader;
 	private static PrintWriter writer;
 	
-	public void setup(String fileName) throws IOException {
+	public TextBuddy(String fileName) throws IOException {
 		initialiseFile(fileName);
 		initialiseReader();
 		initialiseWriter();
