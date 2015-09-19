@@ -143,7 +143,7 @@ public class TextBuddy {
 	 * @return status of the operation
 	 */
 	public String clearAllText(String userCommand) throws IOException {
-		if (!removeFirstWord(userCommand).isEmpty()) {
+		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 		
@@ -165,7 +165,7 @@ public class TextBuddy {
 	public String deleteText(String userCommand) throws IOException {
 		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
 
-		if (isInvalidFormat(parameters, PARAM_SIZE_FOR_DELETE)) {
+		if (parameters.length != PARAM_SIZE_FOR_DELETE) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 
@@ -198,7 +198,7 @@ public class TextBuddy {
 	 * @return MESSAGE_DISPLAY_SUCCESS if operation succeeds
 	 */
 	public String displayText(String userCommand) throws IOException {
-		if (removeFirstWord(userCommand).isEmpty()) {
+		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 		
@@ -245,12 +245,6 @@ public class TextBuddy {
 		writer.flush();
 	
 		return String.format(MESSAGE_ADDED, fileName, lineToAdd);
-	}
-	
-	private boolean isInvalidFormat(String[] parameters, int numParams) {
-		if (parameters.length != numParams) {
-			return false;
-		} else return true;
 	}
 	
 	private static String removeFirstWord(String userCommand) {
