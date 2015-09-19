@@ -32,10 +32,9 @@ import java.io.*;
 
 public class TextBuddy {
 	
-	private static File file;
-	private static String fileName; 
+	private File file;
+	private String fileName; 
 	
-	private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. %1$s is ready for use";
 	private static final String MESSAGE_ADDED = "added to %1$s: \"%2$s\"";
 	private static final String MESSAGE_DELETED = "deleted from %1$s: \"%2$s\"";
 	private static final String MESSAGE_CLEARED_ALL = "all content deleted from %1$s";
@@ -49,51 +48,14 @@ public class TextBuddy {
 	private static BufferedReader reader;
 	private static PrintWriter writer;
 	
-	public static void main(String[] args) throws FileNotFoundException, IOException{
-		initialiseFile(args);
+	public void setup(String fileName) throws IOException {
+		initialiseFile(fileName);
 		initialiseReader();
 		initialiseWriter();
-		showToUser(String.format(MESSAGE_WELCOME, fileName));
-		runTextBuddy();
-	}
-	
-	public String testExecuteCommand(String userCommand) throws IOException {
-		fileName = "test.txt";
-		file = new File(fileName);
-		
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch(IOException ioe) {
-				showToUser("error occured while creating new file.");
-			}
-		}
-		
-		initialiseReader();
-		initialiseWriter();
-		String commandType = getFirstWord(userCommand).toLowerCase();
-		
-		switch (commandType) {
-			case "add":
-				return addText(userCommand);
-			case "display":
-				return displayText(userCommand);
-			case "delete":
-				return deleteText(userCommand);
-			case "clear":
-				return clearAllText(userCommand);
-			case "exit":	
-				reader.close();
-				writer.close();
-				System.exit(0);
-			default:
-				//throw an error if the command is not recognized
-				throw new Error("unrecognized command.");
-		}
 	}
 
-	private static void initialiseFile(String[] args) throws IOException{
-		fileName = args[0];	
+	private void initialiseFile(String fileName) throws IOException{
+		this.fileName = fileName;	
 		file = new File(fileName);
 
 		if (!file.exists()) {
@@ -105,7 +67,7 @@ public class TextBuddy {
 		}
 	}
 	
-	private static void initialiseReader(){
+	private void initialiseReader(){
 		try {
 			reader = new BufferedReader(new FileReader(file));
 		} catch (FileNotFoundException fnfe) {
@@ -113,7 +75,7 @@ public class TextBuddy {
 		}
 	}
 	
-	private static void initialiseWriter() {
+	private void initialiseWriter() {
 		try {
 			writer = new PrintWriter(file);
 		} catch (FileNotFoundException fnfe) {
@@ -121,11 +83,11 @@ public class TextBuddy {
 		} 
 	}
 	
-	private static void showToUser(String text) {
+	public void showToUser(String text) {
 		System.out.println(text);
 	}
 	
-	private static void runTextBuddy() throws IOException {
+	public void runTextBuddy() throws IOException {
 		while (true) {
 			System.out.print("command:");
 			String command = scanner.nextLine();
@@ -136,7 +98,7 @@ public class TextBuddy {
 		}	
 	}
 	
-	public static String executeCommand(String userCommand) throws IOException {
+	public String executeCommand(String userCommand) throws IOException {
 		String commandType = getFirstWord(userCommand).toLowerCase();
 		
 		switch (commandType) {
@@ -165,15 +127,13 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	private static String clearAllText(String userCommand) {
+	public String clearAllText(String userCommand) {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 		
-		try {
-			String nextLine = new String();
-			
-			while((nextLine = reader.readLine()) != null) {
+		try {			
+			while(reader.readLine() != null) {
 				continue;
 			}
 
@@ -193,7 +153,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	private static String deleteText(String userCommand) {
+	public String deleteText(String userCommand) {
 		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
 
 		if (parameters.length != PARAM_SIZE_FOR_DELETE) {
@@ -239,7 +199,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return MESSAGE_DISPLAY_SUCCESS if operation succeeds
 	 */
-	private static String displayText(String userCommand) {
+	public String displayText(String userCommand) {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
@@ -281,7 +241,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	private static String addText(String userCommand) {
+	public String addText(String userCommand) {
 		String lineToAdd = removeFirstWord(userCommand);
 		
 		writer.write(lineToAdd + System.getProperty("line.separator"));
