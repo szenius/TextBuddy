@@ -60,8 +60,8 @@ public class TextBuddyTest {
 		assertEquals(buddy.executeCommand("sort"), "all content sorted in testFile.txt");
 		
 		String expectedDisplayText = "1. one little plankton\n";
-		expectedDisplayText += "2. three little daisies";
-		expectedDisplayText += "3. two little giants\n";
+		expectedDisplayText += "2. three little daisies\n";
+		expectedDisplayText += "3. two little giants";
 
 		assertEquals(buddy.executeCommand("display"), expectedDisplayText);
 	}
