@@ -170,6 +170,8 @@ public class TextBuddy {
 		}
 		
 		writer.flush();
+		
+		return String.format(MESSAGE_SORTED, fileName);
 	}
 	
 	/**
@@ -298,11 +300,11 @@ public class TextBuddy {
 		return parameters;
 	}	
 	
-	private boolean isEmptyFile(String nextLine) {
+	/*private boolean isEmptyFile(String nextLine) {
 		if (nextLine == null) {
 			return true;
 		} else {
 			return false;
 		}
-	}
+	}*/
 }
