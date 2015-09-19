@@ -35,11 +35,13 @@ public class TextBuddy {
 	private File file;
 	private String fileName; 
 	
+	private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. %1$s is ready for use";
 	private static final String MESSAGE_ADDED = "added to %1$s: \"%2$s\"";
 	private static final String MESSAGE_DELETED = "deleted from %1$s: \"%2$s\"";
 	private static final String MESSAGE_CLEARED_ALL = "all content deleted from %1$s";
 	private static final String MESSAGE_EMPTY_FILE = "%1$s is empty";
 	private static final String MESSAGE_INVALID_FORMAT = "invalid command format!";
+
 	
 	// These are the correct number of parameters for each command
 	private static final int PARAM_SIZE_FOR_DELETE = 1;
@@ -47,6 +49,14 @@ public class TextBuddy {
 	private static Scanner scanner = new Scanner(System.in);
 	private static BufferedReader reader;
 	private static PrintWriter writer;
+
+	public static void main(String[] args) throws FileNotFoundException, IOException{
+		String fileName = args[0];
+		TextBuddy buddy = new TextBuddy(fileName);
+		
+		buddy.showToUser(String.format(MESSAGE_WELCOME, fileName));
+		buddy.runTextBuddy();
+	}
 	
 	public TextBuddy(String fileName) throws IOException {
 		initialiseFile(fileName);
