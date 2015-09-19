@@ -55,17 +55,28 @@ public class TextBuddy {
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		String fileName = args[0];
 		TextBuddy buddy = new TextBuddy(fileName);
-		buddy.showToUser(String.format(MESSAGE_WELCOME, fileName));
-		buddy.runTextBuddy();
+		buddy.startTextBuddy();
 	}
 	
+	// Constructor
 	public TextBuddy(String fileName) throws IOException {
 		initialiseFile(fileName);
 		initialiseReader();
 		initialiseWriter();
 	}
 	
-	public void runTextBuddy() throws IOException {
+	public void startTextBuddy() throws IOException {
+		showToUser(String.format(MESSAGE_WELCOME, fileName));
+		runTextBuddy();
+	}
+	
+	private void shutDownTextBuddy() throws IOException {
+		reader.close();
+		writer.close();
+		System.exit(0);
+	}
+	
+	private void runTextBuddy() throws IOException {
 		while (true) {
 			System.out.print("command:");
 			String command = scanner.nextLine();
@@ -75,13 +86,6 @@ public class TextBuddy {
 			}
 		}	
 	}
-	
-	public void shutDownTextBuddy() throws IOException {
-		reader.close();
-		writer.close();
-		System.exit(0);
-	}
-
 
 	private void initialiseFile(String fileName) throws IOException{
 		this.fileName = fileName;	
@@ -131,7 +135,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	public String addText(String userCommand) {
+	private String addText(String userCommand) {
 		if (removeFirstWord(userCommand).isEmpty()) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
@@ -151,11 +155,15 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return content to be displayed
 	 */
-	public String displayText(String userCommand) throws IOException {
+	private String displayText(String userCommand) throws IOException {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
-		
+				
+		return getDisplayContent();
+	}
+	
+	private String getDisplayContent() throws IOException {
 		int lineNum = 1;
 		String fileContent = new String();
 		String nextLine = new String();
@@ -177,8 +185,6 @@ public class TextBuddy {
 		}
 		
 		writer.flush();
-			
-		return fileContent;
 	}
 	
 	/**
@@ -189,7 +195,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	public String deleteText(String userCommand) throws IOException {
+	private String deleteText(String userCommand) throws IOException {
 		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
 
 		if (parameters.length != PARAM_SIZE_FOR_DELETE) {
@@ -224,7 +230,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	public String clearAllText(String userCommand) throws IOException {
+	private String clearAllText(String userCommand) throws IOException {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
@@ -243,29 +249,16 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return status of the operation
 	 */
-	public String sortFile(String userCommand) throws IOException {
+	private String sortFile(String userCommand) throws IOException {
 		if (!removeFirstWord(userCommand).equals("")) {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 		
-		String nextLine = new String();
-		nextLine = reader.readLine();
+		ArrayList<String> fileContent = getFileContent();
+		Collections.sort(fileContent);
 		
-		if (nextLine == null) {
-			return String.format(MESSAGE_EMPTY_FILE, fileName);
-		}
-		
-		ArrayList<String> sortedFileContent = new ArrayList<String>();
-		sortedFileContent.add(nextLine);
-		
-		while ((nextLine = reader.readLine()) != null) {
-			sortedFileContent.add(nextLine);
-		}
-		
-		Collections.sort(sortedFileContent);
-		
-		for (int i = 0; i < sortedFileContent.size(); i++) {
-			writer.println(sortedFileContent.get(i));
+		for (int i = 0; i < fileContent.size(); i++) {
+			writer.println(fileContent.get(i));
 		}
 		
 		writer.flush();
@@ -281,7 +274,7 @@ public class TextBuddy {
 	 *            is the full string user has entered as the command
 	 * @return lines which contain the search word
 	 */
-	public String searchFile(String userCommand) throws IOException {
+	private String searchFile(String userCommand) throws IOException {
 		String[] parameters = splitParameters(removeFirstWord(userCommand).trim());
 
 		if (parameters.length != PARAM_SIZE_FOR_SEARCH) {
@@ -289,6 +282,10 @@ public class TextBuddy {
 		}
 		
 		String searchWord = parameters[0];
+		return getSearchResults(searchWord);
+	}
+	
+	private String getSearchResults(String searchWord) throws IOException {
 		String searchResults = new String();
 		int lineNum = 1;
 		String nextLine = new String();
@@ -320,24 +317,41 @@ public class TextBuddy {
 		writer.flush();
 		
 		return searchResults;
-	}
+	}	
 	
-	
-	public void showToUser(String text) {
+	private void showToUser(String text) {
 		System.out.println(text);
 	}
 	
-	private static String removeFirstWord(String userCommand) {
+	private String removeFirstWord(String userCommand) {
 		return userCommand.replace(getFirstWord(userCommand), "").trim();
 	}
 
-	private static String getFirstWord(String userCommand) {
+	private String getFirstWord(String userCommand) {
 		String commandTypeString = userCommand.trim().split("\\s+")[0];
 		return commandTypeString;
 	}
 	
-	private static String[] splitParameters(String commandParametersString) {
+	private String[] splitParameters(String commandParametersString) {
 		String[] parameters = commandParametersString.trim().split("\\s+");
 		return parameters;
 	}	
+	
+	private ArrayList<String> getFileContent() throws IOException {
+		String nextLine = new String();
+		nextLine = reader.readLine();
+		
+		if (nextLine == null) {
+			showToUser(String.format(MESSAGE_EMPTY_FILE, fileName));
+		}
+		
+		ArrayList<String> fileContent = new ArrayList<String>();
+		fileContent.add(nextLine);
+		
+		while ((nextLine = reader.readLine()) != null) {
+			fileContent.add(nextLine);
+		}
+		
+		return fileContent;
+	}
 }
